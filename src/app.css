@@ -1,0 +1,217 @@
+/* ── Geist font (self-hosted subset) ─────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap');
+
+/* ── Design tokens ────────────────────────────────────────────────────────── */
+:root {
+  --font-sans: 'Geist', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Geist Mono', 'Fira Code', monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  --transition: 150ms ease;
+
+  /* Light mode */
+  --bg: #f9f9fb;
+  --bg-surface: #ffffff;
+  --bg-subtle: #f0f0f4;
+  --bg-hover: #e8e8ee;
+
+  --text-primary: #0f0f11;
+  --text-secondary: #6b6b80;
+  --text-muted: #9999aa;
+
+  --border: #e2e2e8;
+  --border-subtle: #ebebf0;
+
+  --accent: #5c6ac4;
+  --accent-hover: #4a58b0;
+  --accent-subtle: #eef0fb;
+
+  --positive: #22863a;
+  --positive-bg: #e6f4ea;
+  --negative: #d73a49;
+  --negative-bg: #ffeef0;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root { color-scheme: dark; }
+  :root:not([data-theme='light']) {
+    --bg: #0d0d0f;
+    --bg-surface: #18181c;
+    --bg-subtle: #222228;
+    --bg-hover: #2a2a32;
+
+    --text-primary: #f0f0f4;
+    --text-secondary: #9999aa;
+    --text-muted: #66667a;
+
+    --border: #2a2a32;
+    --border-subtle: #222228;
+
+    --accent: #818cf8;
+    --accent-hover: #a5b4fc;
+    --accent-subtle: #1e1f38;
+
+    --positive: #3fb950;
+    --positive-bg: #0f2d18;
+    --negative: #f85149;
+    --negative-bg: #2d0f0f;
+
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+  }
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0d0d0f;
+  --bg-surface: #18181c;
+  --bg-subtle: #222228;
+  --bg-hover: #2a2a32;
+  --text-primary: #f0f0f4;
+  --text-secondary: #9999aa;
+  --text-muted: #66667a;
+  --border: #2a2a32;
+  --border-subtle: #222228;
+  --accent: #818cf8;
+  --accent-hover: #a5b4fc;
+  --accent-subtle: #1e1f38;
+  --positive: #3fb950;
+  --positive-bg: #0f2d18;
+  --negative: #f85149;
+  --negative-bg: #2d0f0f;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+/* ── Reset / base ─────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-family: var(--font-sans); font-size: 15px; }
+
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── Utility classes ──────────────────────────────────────────────────────── */
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 1.25rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.badge-positive { background: var(--positive-bg); color: var(--positive); }
+.badge-negative { background: var(--negative-bg); color: var(--negative); }
+
+.amount-positive { color: var(--positive); }
+.amount-negative { color: var(--negative); }
+
+.text-secondary { color: var(--text-secondary); }
+.text-muted { color: var(--text-muted); }
+.text-sm { font-size: 0.85rem; }
+.text-xs { font-size: 0.75rem; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+}
+.btn:hover { background: var(--bg-hover); }
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+
+input, select {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  padding: 0.45rem 0.75rem;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: border-color var(--transition);
+}
+input:focus, select:focus { border-color: var(--accent); }
+
+/* ── Layout ───────────────────────────────────────────────────────────────── */
+.page-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 100vh;
+}
+
+.sidebar {
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border);
+  padding: 1.5rem 1rem;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.main-content {
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.page-header {
+  margin-bottom: 1.5rem;
+}
+
+.page-header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+
+@media (max-width: 900px) {
+  .page-layout { grid-template-columns: 1fr; }
+  .sidebar { position: static; height: auto; }
+  .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .main-content { padding: 1rem; }
+}

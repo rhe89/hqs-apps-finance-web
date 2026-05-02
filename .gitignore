@@ -1,0 +1,56 @@
+## Dependencies
+node_modules/
+
+## SvelteKit build output
+build/
+.svelte-kit/
+
+## Vite
+dist/
+.vite/
+
+## SQLite databases (runtime data — use volume mounts in prod)
+*.db
+*.db-shm
+*.db-wal
+data/
+
+## Environment / secrets — never commit these
+.env
+.env.*
+!.env.example
+
+## Certificates and private keys — never commit
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+## Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+## Runtime / OS
+.DS_Store
+.AppleDouble
+Thumbs.db
+
+## Editors
+.idea/
+.vscode/
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+*.suo
+*.user
+
+## TypeScript
+*.tsbuildinfo
+
+## Testing
+coverage/
+playwright-report/
+test-results/
