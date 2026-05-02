@@ -1,0 +1,43 @@
+# Dependencies — reinstalled by `npm ci` inside the build stage
+node_modules/
+
+# Build output — produced inside the build stage
+build/
+.svelte-kit/
+dist/
+.vite/
+
+# Test / coverage
+coverage/
+playwright-report/
+test-results/
+
+# Git
+.git/
+.gitignore
+
+# Environment / secrets — must never be baked into the image
+.env
+.env.*
+
+# Runtime data
+data/
+*.db
+*.sqlite
+
+# Docker
+Dockerfile
+.dockerignore
+
+# IDE
+.idea/
+.vscode/
+*.user
+
+# macOS
+.DS_Store
+
+# Logs
+logs/
+*.log
+npm-debug.log*
