@@ -12,6 +12,10 @@
 		const colors = ['#5c6ac4','#22863a','#d73a49','#f5a623','#9b59b6','#1abc9c','#e67e22','#3498db'];
 		const top = categories.slice(0, 7);
 
+		const style = getComputedStyle(document.documentElement);
+		const textSecondary = style.getPropertyValue('--text-secondary').trim();
+		const bgSurface = style.getPropertyValue('--bg-surface').trim();
+
 		new Chart(canvas, {
 			type: 'pie',
 			data: {
@@ -20,7 +24,7 @@
 					data: top.map((c) => c.spending),
 					backgroundColor: colors.slice(0, top.length),
 					borderWidth: 2,
-					borderColor: 'var(--bg-surface)'
+					borderColor: bgSurface
 				}]
 			},
 			options: {
@@ -28,7 +32,7 @@
 				plugins: {
 					legend: {
 						position: 'bottom',
-						labels: { color: 'var(--text-secondary)', font: { size: 11 }, padding: 12 }
+						labels: { color: textSecondary, font: { size: 11 }, padding: 12 }
 					},
 					tooltip: {
 						callbacks: {

@@ -12,6 +12,10 @@
 
 		const fmt = new Intl.NumberFormat('nb-NO', { style: 'currency', currency, maximumFractionDigits: 0 });
 
+		const style = getComputedStyle(document.documentElement);
+		const textMuted = style.getPropertyValue('--text-muted').trim();
+		const borderSubtle = style.getPropertyValue('--border-subtle').trim();
+
 		new Chart(canvas, {
 			type: 'line',
 			data: {
@@ -37,10 +41,10 @@
 					}
 				},
 				scales: {
-					x: { ticks: { color: 'var(--text-muted)', font: { size: 11 } }, grid: { color: 'var(--border-subtle)' } },
+					x: { ticks: { color: textMuted, font: { size: 11 } }, grid: { color: borderSubtle } },
 					y: {
-						ticks: { color: 'var(--text-muted)', font: { size: 11 }, callback: (v) => fmt.format(v as number) },
-						grid: { color: 'var(--border-subtle)' }
+						ticks: { color: textMuted, font: { size: 11 }, callback: (v) => fmt.format(v as number) },
+						grid: { color: borderSubtle }
 					}
 				}
 			}

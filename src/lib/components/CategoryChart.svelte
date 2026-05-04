@@ -12,6 +12,11 @@
 
 		const fmt = new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NOK', maximumFractionDigits: 0 });
 
+		const style = getComputedStyle(document.documentElement);
+		const textMuted = style.getPropertyValue('--text-muted').trim();
+		const textSecondary = style.getPropertyValue('--text-secondary').trim();
+		const borderSubtle = style.getPropertyValue('--border-subtle').trim();
+
 		new Chart(canvas, {
 			type: 'bar',
 			data: {
@@ -34,12 +39,12 @@
 			options: {
 				responsive: true,
 				plugins: {
-					legend: { position: 'top', labels: { color: 'var(--text-secondary)', font: { size: 11 } } },
+					legend: { position: 'top', labels: { color: textSecondary, font: { size: 11 } } },
 					tooltip: { callbacks: { label: (ctx) => ` ${fmt.format(ctx.parsed.y as number)}` } }
 				},
 				scales: {
-					x: { ticks: { color: 'var(--text-muted)', font: { size: 11 } }, grid: { display: false } },
-					y: { ticks: { color: 'var(--text-muted)', font: { size: 11 }, callback: (v) => fmt.format(v as number) }, grid: { color: 'var(--border-subtle)' } }
+					x: { ticks: { color: textMuted, font: { size: 11 } }, grid: { display: false } },
+					y: { ticks: { color: textMuted, font: { size: 11 }, callback: (v) => fmt.format(v as number) }, grid: { color: borderSubtle } }
 				}
 			}
 		});

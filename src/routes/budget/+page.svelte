@@ -1,7 +1,7 @@
 <script lang="ts">
 import CategoryChart from '$lib/components/CategoryChart.svelte';
 import { getCategoryIcon, getCategoryColor } from '$lib/utils/categoryIcons';
-import { PieChart, TrendingDown, TrendingUp, Minus, ChevronRight, ChevronDown, CalendarRange, GitBranch } from 'lucide-svelte';
+import { PieChart, TrendingDown, TrendingUp, Minus, ChevronRight, ChevronDown, CalendarRange, GitBranch, ArrowUpRight, ArrowDownLeft } from 'lucide-svelte';
 import type { PageData } from './$types';
 
 let { data }: { data: PageData } = $props();
@@ -9,10 +9,23 @@ let { data }: { data: PageData } = $props();
 function formatAmount(n: number) {
 return new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NOK', maximumFractionDigits: 0 }).format(n);
 }
+function formatDate(d: string) {
+return new Date(d).toLocaleDateString('nb-NO', { day: 'numeric', month: 'short' });
+}
 
 const totalSpending = $derived(data.summary.reduce((s, c) => s + c.spending, 0));
 const totalIncome = $derived(data.summary.reduce((s, c) => s + c.income, 0));
 const net = $derived(totalIncome - totalSpending);
+
+function toggleSubCategory(subCategory: string | null) {
+const url = new URL(window.location.href);
+if (subCategory === null || data.expandedSubCategory === subCategory) {
+url.searchParams.delete('subCategory');
+} else {
+url.searchParams.set('subCategory', subCategory);
+}
+window.location.href = url.toString();
+}
 </script>
 
 <svelte:head><title>Budget — Finance</title></svelte:head>
@@ -133,6 +146,32 @@ window.location.href = url.toString();
 <div class="card breakdown-list">
 {#each data.breakdown as item}
 {@const SubIcon = item.subCategory ? getCategoryIcon(item.subCategory) : GitBranch}
+{@const isExpanded = data.expandedSubCategory === item.subCategory}
+{@const isClickable = item.subCategory !== null}
+{#if isClickable}
+<button
+class="breakdown-row breakdown-row-clickable"
+class:breakdown-row-active={isExpanded}
+onclick={() => toggleSubCategory(item.subCategory)}
+>
+<span class="breakdown-name">
+<SubIcon size={13} strokeWidth={1.75} />
+{item.subCategory}
+<span class="breakdown-count text-muted text-xs">{item.transactionCount}</span>
+</span>
+<div class="breakdown-right">
+<div class="breakdown-amounts">
+{#if item.spending > 0}<span class="amount-negative">{formatAmount(item.spending)}</span>{/if}
+{#if item.income > 0}<span class="amount-positive">{formatAmount(item.income)}</span>{/if}
+</div>
+{#if isExpanded}
+<ChevronDown size={12} strokeWidth={1.75} class="expand-sub-icon" />
+{:else}
+<ChevronRight size={12} strokeWidth={1.75} class="expand-sub-icon" />
+{/if}
+</div>
+</button>
+{:else}
 <div class="breakdown-row">
 <span class="breakdown-name">
 <SubIcon size={13} strokeWidth={1.75} />
@@ -143,6 +182,27 @@ window.location.href = url.toString();
 {#if item.income > 0}<span class="amount-positive">{formatAmount(item.income)}</span>{/if}
 </div>
 </div>
+{/if}
+
+{#if isExpanded && data.subCategoryTransactions}
+<div class="sub-tx-list">
+{#each data.subCategoryTransactions.items as tx}
+<a href="/transactions/{tx.id}" class="sub-tx-row">
+<span class="sub-tx-dir" class:dir-in={tx.amount > 0} class:dir-out={tx.amount < 0}>
+{#if tx.amount > 0}<ArrowDownLeft size={11} strokeWidth={2} />{:else}<ArrowUpRight size={11} strokeWidth={2} />{/if}
+</span>
+<span class="sub-tx-desc">{tx.description}</span>
+<span class="sub-tx-date text-muted text-xs">{formatDate(tx.bookingDate)}</span>
+<span class="sub-tx-amount" class:amount-negative={tx.amount < 0} class:amount-positive={tx.amount > 0}>
+{formatAmount(Math.abs(tx.amount))}
+</span>
+</a>
+{/each}
+{#if data.subCategoryTransactions.hasNextPage}
+<div class="sub-tx-more text-muted text-xs">Showing first 100 transactions</div>
+{/if}
+</div>
+{/if}
 {/each}
 </div>
 </section>
@@ -194,8 +254,38 @@ color: var(--cat-color);
 .breakdown-row {
 display: flex; justify-content: space-between; align-items: center;
 padding: 0.5rem 1rem; border-bottom: 1px solid var(--border-subtle); font-size: 0.875rem;
+width: 100%; text-align: left; background: none; border-left: none; border-right: none; border-top: none;
 }
 .breakdown-row:last-child { border-bottom: none; }
+.breakdown-row-clickable { cursor: pointer; transition: background var(--transition); }
+.breakdown-row-clickable:hover, .breakdown-row-active { background: var(--bg-hover); }
 .breakdown-name { display: flex; align-items: center; gap: 7px; color: var(--text-primary); }
+.breakdown-count { margin-left: 2px; }
+.breakdown-right { display: flex; align-items: center; gap: 8px; }
 .breakdown-amounts { display: flex; gap: 0.75rem; }
+:global(.expand-sub-icon) { color: var(--text-muted); flex-shrink: 0; }
+
+.sub-tx-list {
+background: var(--bg-subtle);
+border-bottom: 1px solid var(--border-subtle);
+}
+.sub-tx-row {
+display: flex; align-items: center; gap: 8px;
+padding: 0.4rem 1rem 0.4rem 2rem;
+font-size: 0.8rem; color: var(--text-primary); text-decoration: none;
+border-bottom: 1px solid var(--border-subtle);
+transition: background var(--transition);
+}
+.sub-tx-row:last-child { border-bottom: none; }
+.sub-tx-row:hover { background: var(--bg-hover); text-decoration: none; }
+.sub-tx-dir {
+width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center;
+justify-content: center; flex-shrink: 0;
+}
+.dir-in { background: rgba(34,134,58,0.12); color: var(--positive); }
+.dir-out { background: rgba(215,58,73,0.10); color: var(--negative); }
+.sub-tx-desc { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sub-tx-date { flex-shrink: 0; }
+.sub-tx-amount { flex-shrink: 0; font-weight: 500; }
+.sub-tx-more { padding: 0.4rem 1rem 0.4rem 2rem; font-style: italic; }
 </style>

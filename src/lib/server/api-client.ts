@@ -72,6 +72,7 @@ export interface TransactionFilter {
 	from?: string;
 	to?: string;
 	category?: string;
+	subCategory?: string;
 	minAmount?: number;
 	maxAmount?: number;
 	page?: number;
@@ -140,7 +141,21 @@ export const financeApi = {
 			apiFetch(`/accounts/${id}/balance-history?months=${months}`)
 	},
 	transactions: {
-		getById: (id: string): Promise<TransactionDto> => apiFetch(`/transactions/${id}`)
+		getById: (id: string): Promise<TransactionDto> => apiFetch(`/transactions/${id}`),
+		getAll: (filter: TransactionFilter = {}): Promise<PagedResult<TransactionDto>> => {
+			const params = new URLSearchParams();
+			if (filter.search) params.set('search', filter.search);
+			if (filter.from) params.set('from', filter.from);
+			if (filter.to) params.set('to', filter.to);
+			if (filter.category) params.set('category', filter.category);
+			if (filter.subCategory) params.set('subCategory', filter.subCategory);
+			if (filter.minAmount != null) params.set('minAmount', String(filter.minAmount));
+			if (filter.maxAmount != null) params.set('maxAmount', String(filter.maxAmount));
+			if (filter.page) params.set('page', String(filter.page));
+			if (filter.pageSize) params.set('pageSize', String(filter.pageSize));
+			const qs = params.toString();
+			return apiFetch(`/transactions${qs ? `?${qs}` : ''}`);
+		}
 	},
 	categories: {
 		getSummary: (from?: string, to?: string, accountIds?: string[]): Promise<CategorySummaryDto[]> => {

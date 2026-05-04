@@ -10,9 +10,10 @@ export const load: PageServerLoad = async ({ parent }) => {
 	const favoriteAccounts = accounts.filter((a) => favoriteIds.has(a.id));
 
 	const today = new Date();
-	const firstOfMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-	const from = firstOfMonth.toISOString().split('T')[0];
-	const to = today.toISOString().split('T')[0];
+	const firstOfLastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+	const lastOfLastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+	const from = firstOfLastMonth.toISOString().split('T')[0];
+	const to = lastOfLastMonth.toISOString().split('T')[0];
 
 	const [topCategories, recentTransactions] = await Promise.all([
 		financeApi.categories.getSummary(from, to),
