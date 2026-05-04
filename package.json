@@ -20,7 +20,8 @@
   },
   "dependencies": {
     "chart.js": "^4.4.9",
-    "lucide-svelte": "1.0.1"
+    "lucide-svelte": "1.0.1",
+    "undici": "7.25.0"
   },
   "type": "module"
 }

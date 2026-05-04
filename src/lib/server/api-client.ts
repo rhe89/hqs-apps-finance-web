@@ -2,9 +2,13 @@
  * Server-only mTLS API client.
  * Loads the client certificate from env-specified paths and attaches it to every
  * request to the Finance API. The certificate never reaches the browser.
+ *
+ * Uses undici Agent as `dispatcher` — Node.js native fetch is undici-based and
+ * ignores the legacy `agent` option entirely. Using dispatcher is the only way to
+ * pass TLS options (client certs, rejectUnauthorized) to native fetch.
  */
-import https from 'node:https';
 import fs from 'node:fs';
+import { Agent, type Dispatcher } from 'undici';
 import { env } from '$env/dynamic/private';
 
 export interface AccountDto {
@@ -79,36 +83,37 @@ export interface TransactionFilter {
 	pageSize?: number;
 }
 
-// ── Build the HTTPS agent once at module load ─────────────────────────────────
+// ── Build the undici dispatcher once at module load ───────────────────────────
 
-function buildAgent(): https.Agent | undefined {
+function buildDispatcher(): Dispatcher {
 	const certPath = env.FINANCE_API_CLIENT_CERT_PATH;
 	const keyPath = env.FINANCE_API_CLIENT_KEY_PATH;
 	const caPath = env.FINANCE_API_CA_CERT_PATH;
 
 	if (!certPath || !keyPath) {
-		// No cert configured — connect without mTLS.
-		// The Finance API must have DisableMtls=true for this to work.
-		return new https.Agent({ rejectUnauthorized: false });
+		// No cert configured — connect without mTLS (DisableMtls=true required on API).
+		// Disable TLS verification for local dev with a self-signed certificate.
+		return new Agent({ connect: { rejectUnauthorized: false } });
 	}
 
-	return new https.Agent({
-		cert: fs.readFileSync(certPath),
-		key: fs.readFileSync(keyPath),
-		ca: caPath ? fs.readFileSync(caPath) : undefined,
-		rejectUnauthorized: true
+	return new Agent({
+		connect: {
+			cert: fs.readFileSync(certPath),
+			key: fs.readFileSync(keyPath),
+			ca: caPath ? fs.readFileSync(caPath) : undefined,
+			rejectUnauthorized: true
+		}
 	});
 }
 
-const agent = buildAgent();
+const dispatcher = buildDispatcher();
 const baseUrl = env.FINANCE_API_BASE_URL ?? 'https://localhost:7200';
 
 async function apiFetch<T>(path: string): Promise<T> {
 	const url = `${baseUrl}${path}`;
 	const response = await fetch(url, {
-		// @ts-expect-error — Node 18+ fetch accepts `agent` via undici dispatcher,
-		// but we use the native https agent for mTLS support.
-		agent,
+		// @ts-expect-error — undici dispatcher is valid for Node.js native fetch but missing from types
+		dispatcher,
 		headers: { Accept: 'application/json' }
 	});
 
